@@ -1,52 +1,46 @@
 const calcData = [
-{ id: "clear", value: "AC" },
-{ id: "divide", value: "/" },
-{ id: "multiply", value: "x" },
-{ id: "seven", value: 7 },
-{ id: "eight", value: 8 },
-{ id: "nine", value: 9 },
-{ id: "subtract", value: "-" },
-{ id: "four", value: 4 },
-{ id: "five", value: 5 },
-{ id: "six", value: 6 },
-{ id: "add", value: "+" },
-{ id: "one", value: 1 },
-{ id: "two", value: 2 },
-{ id: "three", value: 3 },
-{ id: "equals", value: "=" },
-{ id: "zero", value: 0 },
-{ id: "decimal", value: "." }];
-
+  { id: "clear", value: "AC" },
+  { id: "divide", value: "/" },
+  { id: "multiply", value: "x" },
+  { id: "seven", value: 7 },
+  { id: "eight", value: 8 },
+  { id: "nine", value: 9 },
+  { id: "subtract", value: "-" },
+  { id: "four", value: 4 },
+  { id: "five", value: 5 },
+  { id: "six", value: 6 },
+  { id: "add", value: "+" },
+  { id: "one", value: 1 },
+  { id: "two", value: 2 },
+  { id: "three", value: 3 },
+  { id: "equals", value: "=" },
+  { id: "zero", value: 0 },
+  { id: "decimal", value: "." }
+];
 
 const operators = ["AC", "/", "x", "+", "-", "="];
-
 const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const Display = ({ input, output }) => {
-  return /*#__PURE__*/(
-    React.createElement("div", { className: "output" }, /*#__PURE__*/
-    React.createElement("span", { className: "result" }, output), /*#__PURE__*/
-    React.createElement("span", { id: "display", className: "input" }, input)));
+const Display = ({ input, output }) => (
+  <div className="output">
+    <span className="result">{output}</span>
+    <span id="display" className="input">{input}</span>
+  </div>
+);
 
+const Key = ({ keyData: { id, value }, handleInput }) => (
+  <button id={id} onClick={() => handleInput(value)}>
+    {value}
+  </button>
+);
 
-};
-
-
-const Key = ({ keyData: { id, value }, handleInput }) => /*#__PURE__*/
-React.createElement("button", { id: id, onClick: () => handleInput(value) },
-value);
-
-
-
-const Keyboard = ({ handleInput }) => /*#__PURE__*/
-React.createElement("div", { className: "keys" },
-calcData.map((key) => /*#__PURE__*/
-React.createElement(Key, { key: key.id, keyData: key, handleInput: handleInput })));
-
-
-
-
-
+const Keyboard = ({ handleInput }) => (
+  <div className="keys">
+    {calcData.map((key) => (
+      <Key key={key.id} keyData={key} handleInput={handleInput} />
+    ))}
+  </div>
+);
 
 const App = () => {
   const [input, setInput] = React.useState("0");
@@ -54,7 +48,6 @@ const App = () => {
   const [calculatorData, setCalculatorData] = React.useState("");
 
   const handleSubmit = () => {
-    console.log("handleSubmit", calculatorData);
     const total = eval(calculatorData);
     setInput(`${total}`);
     setOutput(`${total}`);
@@ -67,7 +60,7 @@ const App = () => {
     setCalculatorData("");
   };
 
-  const handleNumber = value => {
+  const handleNumber = (value) => {
     if (!calculatorData.length) {
       setInput(`${value}`);
       setCalculatorData(`${value}`);
@@ -76,8 +69,7 @@ const App = () => {
         setCalculatorData(`${calculatorData}`);
       } else {
         const lastChat = calculatorData.charAt(calculatorData.length - 1);
-        const isLastChatOperator =
-        lastChat === "*" || operators.includes(lastChat);
+        const isLastChatOperator = lastChat === "*" || operators.includes(lastChat);
         setInput(isLastChatOperator ? `${value}` : `${input}${value}`);
         setCalculatorData(`${calculatorData}${value}`);
       }
@@ -95,44 +87,37 @@ const App = () => {
         setCalculatorData(`${calculatorData}0.`);
       } else {
         setInput(lastChat === "." || input.includes(".") ? input : input + ".");
-        const formattedValue =
-        lastChat === "." || input.includes(".") ?
-        calculatorData :
-        calculatorData + ".";
+        const formattedValue = lastChat === "." || input.includes(".")
+          ? calculatorData
+          : calculatorData + ".";
         setCalculatorData(formattedValue);
       }
     }
   };
 
-  const handleOperators = value => {
+  const handleOperators = (value) => {
     if (calculatorData.length) {
       setInput(`${value}`);
       const beforeLastChat = calculatorData.charAt(calculatorData.length - 2);
-
-      const beforeLastIsOperator =
-      operators.includes(beforeLastChat) || beforeLastChat === "*";
-
+      const beforeLastIsOperator = operators.includes(beforeLastChat) || beforeLastChat === "*";
       const lastChat = calculatorData.charAt(calculatorData.length - 1);
-
-      const lastChatIsOperator =
-      operators.includes(lastChat) || lastChat === "*";
-
+      const lastChatIsOperator = operators.includes(lastChat) || lastChat === "*";
       const validOp = value === "x" ? "*" : value;
 
       if (
-      lastChatIsOperator && value !== "-" ||
-      beforeLastIsOperator && lastChatIsOperator)
-      {
+        (lastChatIsOperator && value !== "-") ||
+        (beforeLastIsOperator && lastChatIsOperator)
+      ) {
         if (beforeLastIsOperator) {
           const updatedValue = `${calculatorData.substring(
-          0,
-          calculatorData.length - 2)
-          }${value}`;
+            0,
+            calculatorData.length - 2
+          )}${value}`;
           setCalculatorData(updatedValue);
         } else {
           setCalculatorData(
-          `${calculatorData.substring(0, calculatorData.length - 1)}${validOp}`);
-
+            `${calculatorData.substring(0, calculatorData.length - 1)}${validOp}`
+          );
         }
       } else {
         setCalculatorData(`${calculatorData}${validOp}`);
@@ -140,7 +125,7 @@ const App = () => {
     }
   };
 
-  const handleInput = value => {
+  const handleInput = (value) => {
     if (value === "=") {
       handleSubmit();
     } else if (value === "AC") {
@@ -162,14 +147,14 @@ const App = () => {
     handleOutput();
   }, [calculatorData]);
 
-  return /*#__PURE__*/(
-    React.createElement("div", { className: "container" }, /*#__PURE__*/
-    React.createElement("div", { className: "calculator" }, /*#__PURE__*/
-    React.createElement(Display, { input: input, output: output }), /*#__PURE__*/
-    React.createElement(Keyboard, { handleInput: handleInput }))));
-
-
-
+  return (
+    <div className="container">
+      <div className="calculator">
+        <Display input={input} output={output} />
+        <Keyboard handleInput={handleInput} />
+      </div>
+    </div>
+  );
 };
 
-ReactDOM.render( /*#__PURE__*/React.createElement(App, null), document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById("app"));
